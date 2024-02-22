@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import PokemonLogo from '/images/pokemon.png';
+import React from 'react'
+import {useRequest} from './hooks/useRequest';
+import Pokemon from './components/Pokemon';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+
+  const { isLoading, data, error } = useRequest('/pokemon');
+
+  // subcomponent
+  const DisplayPokemon = () => {
+      if(data){
+        return (
+          <div className='row'>
+            {
+              data.results.map((pokemon) => {
+                return (
+                  <Pokemon key={pokemon.name} pokemon={pokemon}/>
+                );
+              })
+            }
+          </div>
+        );
+      }
+  }
+
+  const LoadingHandling = () => {
+    if(isLoading){
+      return <div>Loading Pokemon data...</div>;
+    }
+  }
+
+  const ErrorHandling = () => {
+    if(error){
+      return <div>{error}: There was an error with getting data - App.jsx</div>;
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+    <img
+      src={PokemonLogo}
+      className='pokemon-logo'
+    ></img>
+    {<DisplayPokemon />} : {<ErrorHandling />}
+    </div>
+
   )
 }
-
-export default App
